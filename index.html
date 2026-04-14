@@ -3,456 +3,294 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Harvest Transaction Management — VCMIS</title>
+<title>Transactions — VCMIS</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --navy:#0a1f44;--blue:#1a56db;--blue2:#1e40af;
-  --bg:#f8fafc;--white:#ffffff;--border:#e2e8f0;--border2:#cbd5e1;
-  --text:#0f172a;--text2:#334155;--muted:#64748b;--dim:#94a3b8;
+  --bg:#f0f5ff;--white:#ffffff;--border:#d1daf0;--border2:#bfcbec;
+  --text:#0f172a;--text2:#334155;--muted:#64748b;
   --green:#059669;--green-lt:#ecfdf5;--green-dk:#065f46;
   --red:#dc2626;--red-lt:#fef2f2;--red-dk:#991b1b;
-  --amber:#d97706;--amber-lt:#fffbeb;--amber-dk:#92400e;
+  --amber:#d97706;--amber-lt:#fffbeb;
   --purple:#7c3aed;--purple-lt:#f5f3ff;--purple-dk:#4c1d95;
   --r:8px;--r-lg:12px;--r-xl:18px;
-  --sh:0 1px 3px rgba(0,0,0,.06),0 1px 8px rgba(0,0,0,.04);
-  --sh-lg:0 4px 20px rgba(0,0,0,.08);
-  --sh-xl:0 8px 36px rgba(0,0,0,.10);
+  --sh:0 1px 4px rgba(10,31,68,.08),0 2px 12px rgba(10,31,68,.06);
+  --sh-lg:0 4px 24px rgba(10,31,68,.12);
+  --sh-xl:0 8px 40px rgba(10,31,68,.15);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-
-/* Topbar */
-.topbar{background:#fff;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04);position:sticky;top:0;z-index:50}
+.topbar{background:#fff;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.04);position:sticky;top:0;z-index:100}
 .tb-brand{display:flex;align-items:center;gap:10px}
-.tb-logo{width:32px;height:32px;border-radius:8px;background:#f8fafc;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px}
-.tb-name{font-size:14px;font-weight:600;color:var(--text);letter-spacing:-.01em}
-.tb-name span{color:var(--muted);font-weight:400}
-.tb-nav{display:flex;align-items:center;gap:2px}
-.tb-nav a{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:var(--r);transition:all .15s}
-.tb-nav a:hover,.tb-nav a.active{background:#f1f5f9;color:var(--text)}
-.tb-right{display:flex;align-items:center;gap:12px}
-.tb-sep{width:1px;height:20px;background:var(--border)}
-.tb-user{display:flex;align-items:center;gap:8px;color:var(--text2);font-size:13px;cursor:pointer}
-.tb-avatar{width:30px;height:30px;border-radius:50%;background:#e2e8f0;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text2)}
-
-/* Hero */
-.hero{background:#fff;padding:20px 0 0;border-bottom:1px solid var(--border)}
-.hero-inner{max-width:1200px;margin:0 auto;padding:0 20px 20px}
-.breadcrumb{display:flex;align-items:center;gap:5px;font-size:12px;margin-bottom:10px;flex-wrap:wrap}
-.breadcrumb a{color:var(--muted);text-decoration:none;transition:color .15s}
-.breadcrumb a:hover{color:var(--blue)}
-.breadcrumb .sep{color:var(--border2)}
-.breadcrumb .cur{color:var(--text2);font-weight:500}
-.hero h1{font-size:clamp(18px,3vw,22px);font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:4px}
-.hero p{font-size:13px;color:var(--muted);line-height:1.55;max-width:580px}
-
-/* Layout */
-.wrap{max-width:1200px;margin:0 auto;padding:24px 20px 80px}
-
-/* Stats */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
-@media(max-width:700px){.stats{grid-template-columns:1fr 1fr}}
-.scard{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;box-shadow:var(--sh);border-left:3px solid transparent}
-.scard.blue{border-left-color:var(--blue)}.scard.green{border-left-color:var(--green)}
-.scard.amber{border-left-color:var(--amber)}.scard.purple{border-left-color:var(--purple)}
-.scard-lbl{font-size:10px;color:var(--muted);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
-.scard-val{font-size:22px;font-weight:700;color:var(--text)}
-.scard.green .scard-val{color:var(--green-dk)}.scard.amber .scard-val{color:var(--amber-dk)}.scard.purple .scard-val{color:var(--purple-dk)}
-
-/* Card */
+.tb-logo{width:32px;height:32px;border-radius:8px;background:#f8fafc;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:center;font-size:16px}
+.tb-name{font-size:14px;font-weight:600;color:#0f172a;letter-spacing:-.01em}
+.tb-name span{color:#64748b;font-weight:400}
+.tb-user{display:flex;align-items:center;gap:8px;color:#475569;font-size:13px}
+.tb-avatar{width:30px;height:30px;border-radius:50%;background:#e2e8f0;border:1px solid #cbd5e1;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#334155}
+.hero{background:#fff;padding:20px 0 0;border-bottom:1px solid #e2e8f0}
+.hero-inner{max-width:1200px;margin:0 auto;padding:0 24px 20px}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:10px;color:var(--muted)}
+.wrap{max-width:1200px;margin:0 auto;padding:24px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.scard{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh);border-left:4px solid var(--blue)}
+.scard.green{border-left-color:var(--green)}
+.scard.red{border-left-color:var(--red)}
+.scard-lbl{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:5px}
+.scard-val{font-size:26px;font-weight:700;color:var(--navy)}
+.scard-sub{font-size:11px;color:var(--muted);margin-top:3px}
 .card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-xl);box-shadow:var(--sh-xl);overflow:hidden}
-.card-body{padding:20px 24px 24px}
-
-/* Toolbar */
-.toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px}
-.card-title{font-size:15px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
-.tb-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.search-wrap{display:flex;align-items:center;border:1.5px solid var(--border2);border-radius:var(--r);overflow:hidden;background:var(--white);transition:border-color .2s}
-.search-wrap:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.08)}
-.search-wrap svg{margin:0 8px;color:var(--dim);flex-shrink:0}
-.search-wrap input{border:none;outline:none;background:transparent;padding:8px 8px 8px 0;font-size:13px;color:var(--text);width:220px;font-family:'Inter',sans-serif}
-.search-wrap input::placeholder{color:var(--dim)}
-
-/* Buttons */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--white);font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap}
-.btn:hover{border-color:var(--blue);color:var(--blue);background:#eff6ff}
-.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 3px 10px rgba(26,86,219,.25)}
-.btn.primary:hover{background:var(--blue2);transform:translateY(-1px)}
-.btn.primary:active{transform:none}
-.btn.danger{background:var(--red-dk);border-color:var(--red-dk);color:#fff}
-.btn.danger:hover{background:#7f1d1d}
-.btn.secondary{color:var(--muted)}
-.btn.icon-only{padding:8px 10px}
-
-/* Table */
-.tbl-wrap{overflow-x:auto}
+.card-body{padding:24px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:15px;flex-wrap:wrap}
+.toolbar-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.search-wrap{display:flex;align-items:center;border:1.5px solid var(--border2);border-radius:var(--r);background:#fff;padding-left:10px}
+.search-wrap input{border:none;outline:none;padding:10px;font-size:13px;width:210px}
+.filter-sel{border:1.5px solid var(--border2);border-radius:var(--r);padding:10px 12px;font-size:13px;color:var(--text);background:#fff;outline:none;cursor:pointer}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r)}
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{text-align:left;padding:10px 12px;border-bottom:1.5px solid var(--border);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);background:#f8fafc;white-space:nowrap}
-td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap}
+thead th{background:#f8fafc;padding:12px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;border-bottom:2px solid var(--border);white-space:nowrap}
+td{padding:12px 14px;border-bottom:1px solid var(--border);color:var(--text);white-space:nowrap}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#f8faff}
-tr.hl td{background:#fffbeb!important;transition:background 1.2s}
-.tid{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--blue);background:#eff6ff;padding:2px 8px;border-radius:5px;border:1px solid #bfdbfe;display:inline-block;cursor:pointer}
-.tname{font-weight:600;color:var(--text)}
-.row-info{font-size:11px;color:var(--dim);margin-top:12px}
-
-/* Badges */
-.badge{display:inline-block;font-size:11px;padding:3px 9px;border-radius:99px;font-weight:600;border:1px solid transparent}
-.badge-pledge{background:#eff6ff;color:#1e40af;border-color:#bfdbfe}
-.badge-payment{background:var(--green-lt);color:var(--green-dk);border-color:#a7f3d0}
-.badge-verified{background:var(--green-lt);color:var(--green-dk);border-color:#a7f3d0}
-.badge-pending{background:var(--amber-lt);color:var(--amber-dk);border-color:#fde68a}
-
-/* Action buttons */
-.act-btns{display:flex;gap:5px}
-.act-btn{width:30px;height:30px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .15s;flex-shrink:0}
-.act-btn:hover{transform:translateY(-1px);box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.act-btns{display:flex;gap:6px}
+.act-btn{width:32px;height:32px;border-radius:var(--r);border:1.5px solid var(--border2);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .15s}
+.act-btn:hover{transform:translateY(-2px);box-shadow:0 3px 8px rgba(0,0,0,0.05)}
 .act-btn.edit:hover{border-color:var(--blue);color:var(--blue);background:#eff6ff}
+.act-btn.tog-on:hover{border-color:var(--amber);color:var(--amber);background:var(--amber-lt)}
+.act-btn.tog-off:hover{border-color:var(--green);color:var(--green);background:var(--green-lt)}
 .act-btn.del:hover{border-color:var(--red);color:var(--red);background:var(--red-lt)}
-
-/* Empty */
-.empty{padding:52px 24px;text-align:center;color:var(--dim)}
-.empty p{font-size:14px;margin-bottom:8px}
-
-/* Modal */
-.overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;align-items:flex-start;justify-content:center;padding:30px 20px;overflow-y:auto;backdrop-filter:blur(3px)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.badge.verified{background:var(--green-lt);color:var(--green-dk)}
+.badge.pending{background:#f1f5f9;color:#475569}
+.badge.type-badge{background:var(--purple-lt);color:var(--purple-dk)}
+.btn{padding:10px 18px;border-radius:var(--r);font-weight:600;cursor:pointer;border:1.5px solid var(--border2);display:inline-flex;align-items:center;gap:8px;font-size:13px;background:#fff;color:var(--text2)}
+.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 4px 12px rgba(26,86,219,0.2)}
+.btn:hover{background:#f8fafc}
+.btn.primary:hover{background:var(--blue2)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(10,31,68,.4);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
 .overlay.show{display:flex}
-.modal{background:var(--white);border-radius:var(--r-xl);box-shadow:0 24px 60px rgba(0,0,0,.18);width:100%;max-width:660px;overflow:hidden;animation:popIn .22s cubic-bezier(.34,1.3,.64,1);margin:auto}
-.modal.sm{max-width:420px}
-@keyframes popIn{from{opacity:0;transform:scale(.96) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.modal-hd{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)}
-.modal-hd h3{font-size:15px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
-.modal-hd h3 svg{color:var(--blue)}
-.modal-x{background:none;border:none;cursor:pointer;color:var(--dim);font-size:20px;line-height:1;padding:2px 4px;border-radius:4px}
-.modal-x:hover{color:var(--text);background:#f1f5f9}
-.modal-body{padding:22px;max-height:72vh;overflow-y:auto}
-.modal-ft{display:flex;justify-content:flex-end;gap:8px;padding:16px 22px;border-top:1px solid var(--border);background:#f8fafc}
-.del-overlay .modal-hd{background:var(--red-lt);border-bottom-color:#fecaca}
-.del-overlay .modal-hd h3{color:var(--red-dk)}
-.del-overlay .modal-hd h3 svg{color:var(--red)}
-
-/* Form */
-.fg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.fg2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:540px){.fg,.fg2{grid-template-columns:1fr}}
-.field.full{grid-column:1/-1}.field.span2{grid-column:span 2}
-.fsec{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:14px 0 10px;border-bottom:1px solid var(--border);margin-bottom:14px;grid-column:1/-1}
-.flbl{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);margin-bottom:6px}
-.flbl .req{color:var(--red);margin-left:2px}
-.finput{width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:13px;color:var(--text);background:var(--white);outline:none;font-family:'Inter',sans-serif;transition:border-color .2s,box-shadow .2s}
-.finput:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.1)}
-.finput.err{border-color:var(--red)}
-.finput:disabled{background:#f1f5f9;color:var(--muted);cursor:not-allowed}
-.fhint{font-size:11px;color:var(--dim);margin-top:4px}
-.ferr{font-size:11px;color:var(--red);margin-top:4px;display:none}
-.ferr.show{display:block}
-
-/* Delete confirm */
-.del-box{background:var(--red-lt);border:1px solid #fecaca;border-radius:var(--r);padding:12px 14px;margin:10px 0}
-.del-box strong{display:block;font-size:14px;color:var(--red-dk);margin-bottom:2px}
-.del-box span{font-size:11px;color:#b91c1c}
-
-/* Detail view */
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
-.detail-cell{background:var(--white);padding:12px 16px}
-.detail-cell.full{grid-column:1/-1}
-.dlbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:4px}
-.dval{font-size:13px;font-weight:500;color:var(--text);word-break:break-word}
-.dval.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
-
-/* Toast */
-.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast{padding:11px 16px;border-radius:var(--r-lg);font-size:13px;font-weight:500;color:#fff;box-shadow:var(--sh-lg);pointer-events:auto;animation:toastIn .3s ease;display:flex;align-items:center;gap:8px;max-width:340px}
-.toast.success{background:#065f46;border:1px solid var(--green)}
-.toast.danger{background:#7f1d1d;border:1px solid var(--red)}
-.toast.warning{background:#78350f;border:1px solid var(--amber)}
-.toast.info{background:#1e3a8a;border:1px solid var(--blue)}
-@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.anim{animation:slideUp .4s ease both}
-@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-
-@media(max-width:768px){
-  .topbar{padding:0 16px}.tb-nav{display:none}
-  .hero-inner,.wrap{padding-left:16px;padding-right:16px}
-  .card-body{padding:16px}
-  .search-wrap input{width:160px}
-  table{min-width:900px}
-}
+.modal{background:#fff;border-radius:var(--r-xl);width:100%;max-width:560px;box-shadow:var(--sh-xl);animation:pop .25s ease-out;max-height:90vh;display:flex;flex-direction:column}
+@keyframes pop{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+.modal-hd{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.modal-hd h3{font-size:16px;font-weight:700;color:var(--navy)}
+.modal-scroll{overflow-y:auto;flex:1}
+.modal-body{padding:24px}
+.modal-ft{padding:16px 24px;background:#f8faff;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;flex-shrink:0}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+.form-group label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase}
+.form-group input,.form-group select,.form-group textarea{padding:10px 12px;border:1.5px solid var(--border2);border-radius:var(--r);outline:none;font-size:13px;font-family:'Inter',sans-serif;color:var(--text);transition:border-color .15s;background:#fff}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--blue)}
+.form-group textarea{resize:vertical;min-height:70px}
+.sec-hd{font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;padding-bottom:8px;border-bottom:1px solid var(--border);grid-column:1/-1;margin-top:4px}
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:300;display:flex;flex-direction:column;gap:10px}
+.toast{padding:12px 20px;background:var(--navy);color:#fff;border-radius:var(--r-lg);font-size:13px;font-weight:600;box-shadow:var(--sh-lg);animation:slide .3s ease-out;transition:opacity .3s}
+@keyframes slide{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
 </style>
 </head>
 <body>
 
-<!-- Topbar -->
 <div class="topbar">
   <div class="tb-brand">
-    <div class="tb-logo">⛪</div>
-    <div class="tb-name">VCMIS <span>Finance Portal</span></div>
+    <div class="tb-logo">&#9962;</div>
+    <div class="tb-name">VCMIS <span>Member Portal</span></div>
   </div>
-  <div class="tb-nav">
-    <a href="#">Dashboard</a>
-    <a href="#">Members</a>
-    <a href="#" class="active">Finance</a>
-  </div>
-  <div class="tb-right">
-    <div class="tb-sep"></div>
-    <div class="tb-user">
-      <div class="tb-avatar">AD</div>
-      <span>Admin</span>
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#94a3b8"><polyline points="6 9 12 15 18 9"/></svg>
-    </div>
+  <div style="display:flex;gap:12px;align-items:center">
+    <div class="tb-user"><div class="tb-avatar">AD</div><span>Admin</span></div>
   </div>
 </div>
 
-<!-- Hero -->
 <div class="hero">
   <div class="hero-inner">
-    <div class="breadcrumb">
-      <a href="#">Home</a><span class="sep">/</span>
-      <a href="#">Finance</a><span class="sep">/</span>
-      <span class="cur">Harvest Transactions</span>
-    </div>
-    <h1>Harvest Transaction Management</h1>
-    <p>Record, edit, view and delete harvest pledges and payments across assemblies.</p>
+    <div class="breadcrumb">Home / Transactions</div>
   </div>
 </div>
 
-<!-- Main -->
 <div class="wrap">
-
-  <div class="stats anim">
-    <div class="scard blue"><div class="scard-lbl">Total Records</div><div class="scard-val" id="st0">0</div></div>
-    <div class="scard green"><div class="scard-lbl">Total Paid</div><div class="scard-val" style="font-size:18px;padding-top:3px" id="st1">0.00</div></div>
-    <div class="scard amber"><div class="scard-lbl">Total Pledge</div><div class="scard-val" style="font-size:18px;padding-top:3px" id="st2">0.00</div></div>
-    <div class="scard purple"><div class="scard-lbl">Verified</div><div class="scard-val" id="st3">0</div></div>
+  <div class="stats">
+    <div class="scard">
+      <div class="scard-lbl">Total Records</div>
+      <div class="scard-val" id="stTotal">0</div>
+    </div>
+    <div class="scard green">
+      <div class="scard-lbl">Total Credit</div>
+      <div class="scard-val" id="stCredit">0.00</div>
+      <div class="scard-sub">GHS</div>
+    </div>
+    <div class="scard red">
+      <div class="scard-lbl">Total Debit</div>
+      <div class="scard-val" id="stDebit">0.00</div>
+      <div class="scard-sub">GHS</div>
+    </div>
   </div>
 
-  <div class="card anim" style="animation-delay:.05s">
+  <div class="card">
     <div class="card-body">
       <div class="toolbar">
-        <div class="card-title">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#1a56db"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          Harvest transaction list
-        </div>
-        <div class="tb-controls">
+        <div class="toolbar-left">
           <div class="search-wrap">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="text" id="hSearch" placeholder="Search ID, assembly, teller…" oninput="hFilter()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="srchBox" placeholder="Search records..." oninput="app.render()">
           </div>
-          <button class="btn primary" onclick="hOpenAdd()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add transaction
-          </button>
-          <button class="btn icon-only" title="Refresh" onclick="hReload()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-5"/></svg>
-          </button>
+          <select class="filter-sel" id="filterVerified" onchange="app.render()">
+            <option value="">All Status</option>
+            <option value="1">Verified</option>
+            <option value="0">Pending</option>
+          </select>
+          <select class="filter-sel" id="filterType" onchange="app.render()">
+            <option value="">All Types</option>
+            <option value="1">Type 1</option>
+            <option value="2">Type 2</option>
+            <option value="3">Type 3</option>
+          </select>
         </div>
+        <button class="btn primary" onclick="app.openModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add New
+        </button>
       </div>
+
       <div class="tbl-wrap">
         <table>
           <thead>
             <tr>
-              <th style="width:40px">#</th>
-              <th style="width:80px">Txn ID</th>
-              <th style="width:100px">Assembly</th>
-              <th style="width:130px">PP Code</th>
-              <th style="width:100px">Date</th>
-              <th style="width:85px">Type</th>
-              <th style="width:65px">Year</th>
-              <th style="width:110px">Pledge</th>
-              <th style="width:110px">Amount Paid</th>
-              <th style="width:55px">CCY</th>
-              <th style="width:90px">Teller</th>
-              <th style="width:90px">Status</th>
-              <th style="width:110px">Actions</th>
+              <th>Txn ID</th>
+              <th>Membership ID</th>
+              <th>PP Code</th>
+              <th>Teller</th>
+              <th>Mode of Pmt</th>
+              <th>Currency</th>
+              <th>Amount Paid</th>
+              <th>Credit</th>
+              <th>Debit</th>
+              <th>Txn Type</th>
+              <th>Status</th>
+              <th>Txn Date</th>
+              <th>Txn Time</th>
+              <th style="width:130px">Actions</th>
             </tr>
           </thead>
-          <tbody id="hTbody"></tbody>
+          <tbody id="tBody"></tbody>
         </table>
       </div>
-      <div class="row-info" id="hRowInfo"></div>
     </div>
   </div>
-
 </div>
 
-
-<!-- ADD / EDIT MODAL -->
-<div class="overlay" id="hFormOverlay">
+<!-- Add / Edit Modal -->
+<div class="overlay" id="formOverlay">
   <div class="modal">
     <div class="modal-hd">
-      <h3>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        <span id="hModalTitle">Add Harvest Transaction</span>
-      </h3>
-      <button class="modal-x" onclick="hCloseForm()">✕</button>
+      <h3 id="mTitle">Add Transaction</h3>
+      <button onclick="app.closeModal()" style="border:none;background:none;cursor:pointer;font-size:22px;color:var(--muted);line-height:1">&times;</button>
     </div>
-    <div class="modal-body">
-      <input type="hidden" id="hOrigID">
+    <div class="modal-scroll">
+      <div class="modal-body">
+        <input type="hidden" id="editId">
+        <div class="form-grid">
+          <div class="sec-hd">Assembly &amp; Member Info</div>
+          <div class="form-group">
+            <label>Assembly ID</label>
+            <input type="text" id="fAssemblyID" placeholder="e.g. ASM001" maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>Group ID</label>
+            <input type="number" id="fGroupID" placeholder="e.g. 1">
+          </div>
+          <div class="form-group">
+            <label>Membership ID</label>
+            <input type="text" id="fMembershipID" placeholder="e.g. MEM00123" maxlength="30">
+          </div>
+          <div class="form-group">
+            <label>PP Code</label>
+            <input type="text" id="fPPCode" placeholder="e.g. PP2026" maxlength="20">
+          </div>
 
-      <!-- Section 1: Identity -->
-      <div class="fg">
-        <div class="fsec">Transaction identity</div>
-        <div class="field">
-          <label class="flbl">Assembly ID <span class="req">*</span></label>
-          <input type="text" class="finput" id="hInpAssembly" placeholder="e.g. ASM001" maxlength="10">
-          <div class="fhint">Max 10 characters.</div>
-          <div class="ferr" id="eAssembly">Assembly ID is required.</div>
-        </div>
-        <div class="field">
-          <label class="flbl">PP Code <span class="req">*</span></label>
-          <input type="text" class="finput" id="hInpPPCode" placeholder="e.g. PP-2024-001" maxlength="20">
-          <div class="fhint">Max 20 characters.</div>
-          <div class="ferr" id="ePPCode">PP Code is required.</div>
-        </div>
-        <div class="field">
-          <label class="flbl">Teller</label>
-          <input type="text" class="finput" id="hInpTeller" placeholder="e.g. Kofi Adu" maxlength="20">
-        </div>
-      </div>
+          <div class="sec-hd">Transaction Details</div>
+          <div class="form-group">
+            <label>Transaction Date</label>
+            <input type="date" id="fTxnDate">
+          </div>
+          <div class="form-group">
+            <label>Transaction Time</label>
+            <input type="time" id="fTxnTime">
+          </div>
+          <div class="form-group">
+            <label>Teller</label>
+            <input type="text" id="fTeller" placeholder="Teller name" maxlength="20">
+          </div>
+          <div class="form-group">
+            <label>Transaction Type</label>
+            <select id="fTxnType">
+              <option value="">-- Select --</option>
+              <option value="1">Type 1</option>
+              <option value="2">Type 2</option>
+              <option value="3">Type 3</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Currency</label>
+            <select id="fCurrency">
+              <option value="GHS">GHS</option>
+              <option value="USD">USD</option>
+              <option value="GBP">GBP</option>
+              <option value="EUR">EUR</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mode of Payment</label>
+            <select id="fModeOPmt">
+              <option value="">-- Select --</option>
+              <option value="Cash">Cash</option>
+              <option value="Mobile Money">Mobile Money</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Cheque">Cheque</option>
+              <option value="Card">Card</option>
+            </select>
+          </div>
 
-      <!-- Section 2: Transaction Details -->
-      <div class="fg" style="margin-top:4px">
-        <div class="fsec">Transaction details</div>
-        <div class="field">
-          <label class="flbl">Transaction Date <span class="req">*</span></label>
-          <input type="date" class="finput" id="hInpDate">
-          <div class="ferr" id="eDate">Date is required.</div>
-        </div>
-        <div class="field">
-          <label class="flbl">Transaction Time</label>
-          <input type="time" class="finput" id="hInpTime">
-        </div>
-        <div class="field">
-          <label class="flbl">Harvest Type <span class="req">*</span></label>
-          <input type="text" class="finput" id="hInpHType" placeholder="e.g. MAIN" maxlength="5" oninput="this.value=this.value.toUpperCase()">
-          <div class="fhint">Max 5 chars (MAIN, SPEC…)</div>
-          <div class="ferr" id="eHType">Harvest type is required.</div>
-        </div>
-        <div class="field">
-          <label class="flbl">Harvest Year <span class="req">*</span></label>
-          <input type="number" class="finput" id="hInpYear" placeholder="e.g. 2024" min="2000" max="2099">
-          <div class="ferr" id="eYear">A valid year is required.</div>
-        </div>
-        <div class="field">
-          <label class="flbl">Transaction Type</label>
-          <select class="finput" id="hInpTType">
-            <option value="1">1 — Pledge</option>
-            <option value="2">2 — Payment</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="flbl">Currency</label>
-          <select class="finput" id="hInpCcy">
-            <option value="GHS">GHS — Ghanaian Cedi</option>
-            <option value="USD">USD — US Dollar</option>
-            <option value="GBP">GBP — British Pound</option>
-            <option value="EUR">EUR — Euro</option>
-          </select>
-        </div>
-      </div>
+          <div class="sec-hd">Amounts</div>
+          <div class="form-group">
+            <label>Amount Paid</label>
+            <input type="number" id="fAmountPaid" placeholder="0.00" step="0.01" min="0">
+          </div>
+          <div class="form-group">
+            <label>Exchange Rate</label>
+            <input type="number" id="fExchangeRate" placeholder="1.00" step="0.01" value="1">
+          </div>
+          <div class="form-group">
+            <label>Credit</label>
+            <input type="number" id="fCredit" placeholder="0.00" step="0.01" min="0">
+          </div>
+          <div class="form-group">
+            <label>Debit</label>
+            <input type="number" id="fDebit" placeholder="0.00" step="0.01" min="0">
+          </div>
+          <div class="form-group">
+            <label>Account Type</label>
+            <input type="number" id="fAccountType" placeholder="e.g. 1">
+          </div>
+          <div class="form-group">
+            <label>Request ID</label>
+            <input type="number" id="fRequestID" placeholder="e.g. 100">
+          </div>
 
-      <!-- Section 3: Financial -->
-      <div class="fg" style="margin-top:4px">
-        <div class="fsec">Financial details</div>
-        <div class="field">
-          <label class="flbl">Pledge <span class="req">*</span></label>
-          <input type="number" class="finput" id="hInpPledge" placeholder="0.00" min="0" step="0.01">
-          <div class="ferr" id="ePledge">Pledge amount is required.</div>
-        </div>
-        <div class="field">
-          <label class="flbl">Amount Paid <span class="req">*</span></label>
-          <input type="number" class="finput" id="hInpAmt" placeholder="0.00" min="0" step="0.01">
-          <div class="ferr" id="eAmt">Amount paid is required.</div>
-        </div>
-        <div class="field">
-          <label class="flbl">Exchange Rate</label>
-          <input type="number" class="finput" id="hInpRate" placeholder="1.00" min="0" step="0.01" value="1">
-        </div>
-        <div class="field">
-          <label class="flbl">Mode of Payment</label>
-          <select class="finput" id="hInpMOP">
-            <option value="Cash">Cash</option>
-            <option value="Cheque">Cheque</option>
-            <option value="Mobile Money">Mobile Money</option>
-            <option value="Bank Transfer">Bank Transfer</option>
-          </select>
-        </div>
-        <div class="field span2">
-          <label class="flbl">Payment Details</label>
-          <input type="text" class="finput" id="hInpPayDet" placeholder="Reference, cheque no., MoMo trans. ID…" maxlength="50">
-        </div>
-      </div>
-
-      <!-- Section 4: Comment -->
-      <div class="fg2" style="margin-top:4px">
-        <div class="fsec">Additional info</div>
-        <div class="field full">
-          <label class="flbl">Transaction Comment</label>
-          <input type="text" class="finput" id="hInpComment" placeholder="Optional note…" maxlength="50">
+          <div class="sec-hd">Additional Info</div>
+          <div class="form-group full">
+            <label>Payment Details</label>
+            <input type="text" id="fPaymentDetails" placeholder="Reference or details" maxlength="50">
+          </div>
+          <div class="form-group full">
+            <label>Comment</label>
+            <textarea id="fTranComment" placeholder="Optional notes..." maxlength="50"></textarea>
+          </div>
         </div>
       </div>
     </div>
     <div class="modal-ft">
-      <button class="btn secondary" onclick="hCloseForm()">Cancel</button>
-      <button class="btn primary" onclick="hSave()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
-        <span id="hSaveTxt">Save transaction</span>
-      </button>
-    </div>
-  </div>
-</div>
-
-
-<!-- VIEW MODAL -->
-<div class="overlay" id="hViewOverlay">
-  <div class="modal">
-    <div class="modal-hd">
-      <h3>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        Transaction Details
-      </h3>
-      <button class="modal-x" onclick="hCloseView()">✕</button>
-    </div>
-    <div class="modal-body" style="padding:0">
-      <div class="detail-grid" id="hDetailGrid"></div>
-    </div>
-    <div class="modal-ft">
-      <button class="btn secondary" onclick="hCloseView()">Close</button>
-      <button class="btn primary" onclick="hEditFromView()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Edit this record
-      </button>
-    </div>
-  </div>
-</div>
-
-
-<!-- DELETE MODAL -->
-<div class="overlay del-overlay" id="hDelOverlay">
-  <div class="modal sm">
-    <div class="modal-hd">
-      <h3>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-        Delete Transaction
-      </h3>
-      <button class="modal-x" onclick="hCloseDel()">✕</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="hDelID">
-      <p style="font-size:13px;color:#64748b;margin-bottom:4px">You are about to permanently delete:</p>
-      <div class="del-box">
-        <strong id="hDelName">—</strong>
-        <span>This action cannot be undone.</span>
-      </div>
-    </div>
-    <div class="modal-ft">
-      <button class="btn secondary" onclick="hCloseDel()">Cancel</button>
-      <button class="btn danger" onclick="hConfirmDel()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-        Delete permanently
-      </button>
+      <button class="btn" onclick="app.closeModal()">Cancel</button>
+      <button class="btn primary" onclick="app.save()">Save Record</button>
     </div>
   </div>
 </div>
@@ -460,239 +298,220 @@ tr.hl td{background:#fffbeb!important;transition:background 1.2s}
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
-/* ══════════════════
-   HELPERS
-══════════════════ */
-function esc(s){ return String(s==null?'—':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function fmt(n){ return parseFloat(n||0).toLocaleString('en-GH',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function hlRow(id){
-  setTimeout(()=>{
-    const r=document.getElementById('row-'+id);
-    if(!r) return;
-    r.classList.add('hl');
-    r.scrollIntoView({behavior:'smooth',block:'nearest'});
-    setTimeout(()=>r.classList.remove('hl'),2500);
-  },220);
-}
-function showToast(msg,type='success'){
-  const w=document.getElementById('toastWrap');
-  const t=document.createElement('div');
-  t.className='toast '+type;
-  t.textContent=msg;
-  w.appendChild(t);
-  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(8px)';t.style.transition='.3s';setTimeout(()=>t.remove(),300);},3200);
-}
+const app = {
+  data: [
+    { TransactionID:1001, AssemblyID:'ASM001', GroupID:1, MembershipID:'MEM00123', PPCode:'PP2601',
+      TransactionDate:'2026-03-14', TransactionTime:'09:00', requestID:201,
+      Teller:'John Mensah', TransactionType:1, TransactionCurrency:'GHS',
+      ModeOPmt:'Mobile Money', PaymentDetails:'MoMo Ref #44123', TranComment:'First offering',
+      TranVerifyDate:'2026-03-14', TranVerifyTime:'10:00', TranVerifyBy:'Admin',
+      TransVerified:'1', AmountPaid:500.00, ExchangeRate:1.00, Credit:500.00, Debit:0, accountType:1 },
+    { TransactionID:1002, AssemblyID:'ASM002', GroupID:2, MembershipID:'MEM00456', PPCode:'PP2602',
+      TransactionDate:'2026-03-14', TransactionTime:'10:30', requestID:202,
+      Teller:'Abena Owusu', TransactionType:2, TransactionCurrency:'GHS',
+      ModeOPmt:'Cash', PaymentDetails:'Cash collected', TranComment:'Tithe payment',
+      TranVerifyDate:'', TranVerifyTime:'', TranVerifyBy:'',
+      TransVerified:'0', AmountPaid:250.00, ExchangeRate:1.00, Credit:250.00, Debit:0, accountType:1 },
+    { TransactionID:1003, AssemblyID:'ASM001', GroupID:1, MembershipID:'MEM00789', PPCode:'PP2603',
+      TransactionDate:'2026-03-15', TransactionTime:'14:15', requestID:203,
+      Teller:'Kwame Asante', TransactionType:1, TransactionCurrency:'USD',
+      ModeOPmt:'Bank Transfer', PaymentDetails:'Bank Ref #55789', TranComment:'Donation',
+      TranVerifyDate:'2026-03-15', TranVerifyTime:'15:00', TranVerifyBy:'Supervisor',
+      TransVerified:'1', AmountPaid:100.00, ExchangeRate:14.50, Credit:1450.00, Debit:0, accountType:2 },
+    { TransactionID:1004, AssemblyID:'ASM003', GroupID:3, MembershipID:'MEM01011', PPCode:'PP2604',
+      TransactionDate:'2026-03-15', TransactionTime:'16:45', requestID:204,
+      Teller:'Ama Boateng', TransactionType:3, TransactionCurrency:'GHS',
+      ModeOPmt:'Cheque', PaymentDetails:'Cheque #00234', TranComment:'Welfare deduction',
+      TranVerifyDate:'', TranVerifyTime:'', TranVerifyBy:'',
+      TransVerified:'0', AmountPaid:180.00, ExchangeRate:1.00, Credit:0, Debit:180.00, accountType:1 },
+    { TransactionID:1005, AssemblyID:'ASM002', GroupID:2, MembershipID:'MEM01213', PPCode:'PP2605',
+      TransactionDate:'2026-03-16', TransactionTime:'08:00', requestID:205,
+      Teller:'Kofi Frimpong', TransactionType:2, TransactionCurrency:'GHS',
+      ModeOPmt:'Mobile Money', PaymentDetails:'MoMo Ref #88901', TranComment:'Building fund',
+      TranVerifyDate:'2026-03-16', TranVerifyTime:'09:00', TranVerifyBy:'Admin',
+      TransVerified:'1', AmountPaid:700.00, ExchangeRate:1.00, Credit:700.00, Debit:0, accountType:1 }
+  ],
 
-/* ══════════════════
-   DATA
-══════════════════ */
-let nextID = 1001;
-let hRows = [
-  {id:1001,assemblyID:'ASM001',ppCode:'PP-2024-001',txnDate:'2024-10-06',txnTime:'09:00',harvestType:'MAIN',harvestYear:2024,txnType:1,pledge:500.00,amtPaid:500.00,ccy:'GHS',exchangeRate:1.00,mop:'Cash',payDet:'',teller:'Kofi A',comment:'',verified:'Y'},
-  {id:1002,assemblyID:'ASM001',ppCode:'PP-2024-002',txnDate:'2024-10-06',txnTime:'09:15',harvestType:'MAIN',harvestYear:2024,txnType:2,pledge:1000.00,amtPaid:750.00,ccy:'GHS',exchangeRate:1.00,mop:'Mobile Money',payDet:'0244-XXX-001',teller:'Ama B',comment:'Partial payment',verified:'N'},
-  {id:1003,assemblyID:'ASM002',ppCode:'PP-2024-003',txnDate:'2024-10-06',txnTime:'10:00',harvestType:'MAIN',harvestYear:2024,txnType:1,pledge:250.00,amtPaid:250.00,ccy:'GHS',exchangeRate:1.00,mop:'Cheque',payDet:'CHQ-0012',teller:'Kwame C',comment:'',verified:'Y'},
-];
-let hViewID = null;
+  fmt(n){ return parseFloat(n||0).toLocaleString('en-GH',{minimumFractionDigits:2,maximumFractionDigits:2}) },
 
-/* ══════════════════
-   STATS & RENDER
-══════════════════ */
-function hUpdateStats(){
-  document.getElementById('st0').textContent = hRows.length;
-  document.getElementById('st1').textContent = fmt(hRows.reduce((s,r)=>s+r.amtPaid,0));
-  document.getElementById('st2').textContent = fmt(hRows.reduce((s,r)=>s+r.pledge,0));
-  document.getElementById('st3').textContent = hRows.filter(r=>r.verified==='Y').length;
-}
+  fmtDate(d){
+    if(!d) return '&mdash;';
+    const dt = new Date(d);
+    return isNaN(dt) ? d : dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  },
 
-function hRender(data){
-  const tb = document.getElementById('hTbody');
-  const ri = document.getElementById('hRowInfo');
-  ri.textContent = 'Showing '+data.length+' of '+hRows.length+' records';
-  if(!data.length){
-    tb.innerHTML = `<tr><td colspan="13"><div class="empty"><p>No harvest transactions found.</p><button class="btn primary" style="margin-top:8px" onclick="hOpenAdd()">Add first transaction</button></div></td></tr>`;
-    return;
+  fmtTime(t){
+    if(!t) return '&mdash;';
+    const p = t.split(':');
+    if(p.length < 2) return t;
+    let h = parseInt(p[0]), m = p[1], ap = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return h + ':' + m + ' ' + ap;
+  },
+
+  filtered(){
+    const q  = document.getElementById('srchBox').value.toLowerCase();
+    const fv = document.getElementById('filterVerified').value;
+    const ft = document.getElementById('filterType').value;
+    return this.data.filter(i => {
+      const mq = !q || [i.TransactionID, i.MembershipID, i.PPCode, i.Teller, i.ModeOPmt]
+                       .some(v => String(v||'').toLowerCase().includes(q));
+      const mv = fv === '' || i.TransVerified === fv;
+      const mt = ft === '' || String(i.TransactionType) === ft;
+      return mq && mv && mt;
+    });
+  },
+
+  render(){
+    const list  = this.filtered();
+    const tbody = document.getElementById('tBody');
+    tbody.innerHTML = list.length ? list.map(i => `
+      <tr>
+        <td><span style="font-family:'JetBrains Mono';font-weight:600;color:var(--muted)">#${i.TransactionID}</span></td>
+        <td><span style="font-family:'JetBrains Mono';font-size:12px">${i.MembershipID||'&mdash;'}</span></td>
+        <td><span style="font-family:'JetBrains Mono';font-size:12px;font-weight:600;color:var(--navy)">${i.PPCode}</span></td>
+        <td>${i.Teller||'&mdash;'}</td>
+        <td>${i.ModeOPmt||'&mdash;'}</td>
+        <td><span class="badge type-badge">${i.TransactionCurrency||'&mdash;'}</span></td>
+        <td style="font-weight:600;color:var(--navy)">${this.fmt(i.AmountPaid)}</td>
+        <td style="color:var(--green);font-weight:600">${parseFloat(i.Credit||0)>0 ? '+'+this.fmt(i.Credit) : '&mdash;'}</td>
+        <td style="color:var(--red);font-weight:600">${parseFloat(i.Debit||0)>0 ? '-'+this.fmt(i.Debit) : '&mdash;'}</td>
+        <td><span class="badge type-badge">Type ${i.TransactionType}</span></td>
+        <td><span class="badge ${i.TransVerified==='1'?'verified':'pending'}">${i.TransVerified==='1'?'Verified':'Pending'}</span></td>
+        <td>${this.fmtDate(i.TransactionDate)}</td>
+        <td>${this.fmtTime(i.TransactionTime)}</td>
+        <td>
+          <div class="act-btns">
+            <button class="act-btn edit" title="Edit" onclick="app.openModal(${i.TransactionID})">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="act-btn ${i.TransVerified==='1'?'tog-on':'tog-off'}" title="${i.TransVerified==='1'?'Mark Pending':'Mark Verified'}" onclick="app.toggle(${i.TransactionID})">
+              ${i.TransVerified==='1'
+                ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"/><circle cx="16" cy="12" r="3" fill="currentColor"/></svg>'
+                : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"/><circle cx="8" cy="12" r="3" fill="currentColor"/></svg>'
+              }
+            </button>
+            <button class="act-btn del" title="Delete" onclick="app.delete(${i.TransactionID})">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('') : '<tr><td colspan="14" style="text-align:center;padding:40px;color:var(--muted)">No records found</td></tr>';
+    this.updateStats();
+  },
+
+  updateStats(){
+    const d = this.data;
+    document.getElementById('stTotal').innerText  = d.length;
+    document.getElementById('stCredit').innerText = this.fmt(d.reduce((s,x)=>s+parseFloat(x.Credit||0),0));
+    document.getElementById('stDebit').innerText  = this.fmt(d.reduce((s,x)=>s+parseFloat(x.Debit||0),0));
+  },
+
+  openModal(id=null){
+    const now=new Date(), todayStr=now.toISOString().split('T')[0], timeStr=now.toTimeString().slice(0,5);
+    document.getElementById('formOverlay').classList.add('show');
+    if(id){
+      const item=this.data.find(x=>x.TransactionID===id);
+      document.getElementById('editId').value=id;
+      document.getElementById('fAssemblyID').value=item.AssemblyID||'';
+      document.getElementById('fGroupID').value=item.GroupID||'';
+      document.getElementById('fMembershipID').value=item.MembershipID||'';
+      document.getElementById('fPPCode').value=item.PPCode||'';
+      document.getElementById('fTxnDate').value=item.TransactionDate||'';
+      document.getElementById('fTxnTime').value=item.TransactionTime||'';
+      document.getElementById('fTeller').value=item.Teller||'';
+      document.getElementById('fTxnType').value=item.TransactionType||'';
+      document.getElementById('fCurrency').value=item.TransactionCurrency||'GHS';
+      document.getElementById('fModeOPmt').value=item.ModeOPmt||'';
+      document.getElementById('fAmountPaid').value=item.AmountPaid||'';
+      document.getElementById('fExchangeRate').value=item.ExchangeRate||1;
+      document.getElementById('fCredit').value=item.Credit||'';
+      document.getElementById('fDebit').value=item.Debit||'';
+      document.getElementById('fAccountType').value=item.accountType||'';
+      document.getElementById('fRequestID').value=item.requestID||'';
+      document.getElementById('fPaymentDetails').value=item.PaymentDetails||'';
+      document.getElementById('fTranComment').value=item.TranComment||'';
+      document.getElementById('mTitle').innerText='Edit Transaction';
+    } else {
+      ['fAssemblyID','fGroupID','fMembershipID','fPPCode','fTeller','fAmountPaid',
+       'fCredit','fDebit','fAccountType','fRequestID','fPaymentDetails','fTranComment']
+        .forEach(fid=>document.getElementById(fid).value='');
+      document.getElementById('editId').value='';
+      document.getElementById('fTxnDate').value=todayStr;
+      document.getElementById('fTxnTime').value=timeStr;
+      document.getElementById('fCurrency').value='GHS';
+      document.getElementById('fModeOPmt').value='';
+      document.getElementById('fTxnType').value='';
+      document.getElementById('fExchangeRate').value=1;
+      document.getElementById('mTitle').innerText='Add Transaction';
+    }
+  },
+
+  closeModal(){ document.getElementById('formOverlay').classList.remove('show') },
+
+  save(){
+    const id=document.getElementById('editId').value;
+    const ppcode=document.getElementById('fPPCode').value.trim();
+    const assembly=document.getElementById('fAssemblyID').value.trim();
+    if(!ppcode||!assembly){ this.notify('Assembly ID and PP Code are required'); return; }
+    const obj={
+      AssemblyID:assembly,
+      GroupID:parseInt(document.getElementById('fGroupID').value)||0,
+      MembershipID:document.getElementById('fMembershipID').value.trim(),
+      PPCode:ppcode,
+      TransactionDate:document.getElementById('fTxnDate').value,
+      TransactionTime:document.getElementById('fTxnTime').value,
+      Teller:document.getElementById('fTeller').value.trim(),
+      TransactionType:parseInt(document.getElementById('fTxnType').value)||1,
+      TransactionCurrency:document.getElementById('fCurrency').value,
+      ModeOPmt:document.getElementById('fModeOPmt').value,
+      AmountPaid:parseFloat(document.getElementById('fAmountPaid').value)||0,
+      ExchangeRate:parseFloat(document.getElementById('fExchangeRate').value)||1,
+      Credit:parseFloat(document.getElementById('fCredit').value)||0,
+      Debit:parseFloat(document.getElementById('fDebit').value)||0,
+      accountType:parseInt(document.getElementById('fAccountType').value)||1,
+      requestID:parseInt(document.getElementById('fRequestID').value)||0,
+      PaymentDetails:document.getElementById('fPaymentDetails').value.trim(),
+      TranComment:document.getElementById('fTranComment').value.trim()
+    };
+    if(id){
+      const item=this.data.find(x=>x.TransactionID==id);
+      Object.assign(item,obj);
+      this.notify('Transaction updated successfully');
+    } else {
+      const newId=this.data.length?Math.max(...this.data.map(x=>x.TransactionID))+1:1001;
+      this.data.unshift({TransactionID:newId,...obj,TransVerified:'0',TranVerifyDate:'',TranVerifyTime:'',TranVerifyBy:''});
+      this.notify('Transaction added successfully');
+    }
+    this.closeModal();
+    this.render();
+  },
+
+  toggle(id){
+    const item=this.data.find(x=>x.TransactionID===id);
+    item.TransVerified=item.TransVerified==='1'?'0':'1';
+    this.notify('#'+id+' marked '+(item.TransVerified==='1'?'Verified':'Pending'));
+    this.render();
+  },
+
+  delete(id){
+    if(confirm('Delete this transaction record?')){
+      this.data=this.data.filter(x=>x.TransactionID!==id);
+      this.render();
+      this.notify('Record deleted');
+    }
+  },
+
+  notify(msg){
+    const wrap=document.getElementById('toastWrap');
+    const t=document.createElement('div');
+    t.className='toast'; t.innerText=msg;
+    wrap.appendChild(t);
+    setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=>t.remove(),300); },2500);
   }
-  tb.innerHTML = data.map((r,i) => `
-    <tr id="row-${r.id}">
-      <td style="color:#94a3b8;font-size:12px">${i+1}</td>
-      <td><span class="tid" onclick="hOpenView(${r.id})" title="View details">${esc(r.id)}</span></td>
-      <td><span class="tname">${esc(r.assemblyID)}</span></td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#334155">${esc(r.ppCode)}</td>
-      <td style="font-size:12px;color:#334155">${esc(r.txnDate)}</td>
-      <td><span class="badge ${r.txnType===1?'badge-pledge':'badge-payment'}">${r.txnType===1?'Pledge':'Payment'}</span></td>
-      <td style="font-size:12px;color:#334155">${esc(r.harvestYear)}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${esc(r.ccy)} ${fmt(r.pledge)}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:#065f46">${esc(r.ccy)} ${fmt(r.amtPaid)}</td>
-      <td style="font-size:12px;color:#64748b">${esc(r.ccy)}</td>
-      <td style="font-size:12px">${esc(r.teller||'—')}</td>
-      <td><span class="badge ${r.verified==='Y'?'badge-verified':'badge-pending'}">${r.verified==='Y'?'Verified':'Pending'}</span></td>
-      <td>
-        <div class="act-btns">
-          <button class="act-btn" title="View" onclick="hOpenView(${r.id})">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-          <button class="act-btn edit" title="Edit" onclick="hOpenEdit(${r.id})">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </button>
-          <button class="act-btn del" title="Delete" onclick="hOpenDel(${r.id})">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-          </button>
-        </div>
-      </td>
-    </tr>`).join('');
-}
-
-function hFilter(){
-  const q = document.getElementById('hSearch').value.toLowerCase().trim();
-  hRender(hRows.filter(r => !q || String(r.id).includes(q) || r.assemblyID.toLowerCase().includes(q) || r.ppCode.toLowerCase().includes(q) || (r.teller||'').toLowerCase().includes(q)));
-}
-function hReload(){ document.getElementById('hSearch').value=''; hRender(hRows); showToast('Table refreshed','info'); }
-
-/* ══════════════════
-   FORM
-══════════════════ */
-function hClearErr(){
-  ['hInpAssembly','hInpPPCode','hInpDate','hInpHType','hInpYear','hInpPledge','hInpAmt'].forEach(id=>document.getElementById(id).classList.remove('err'));
-  ['eAssembly','ePPCode','eDate','eHType','eYear','ePledge','eAmt'].forEach(id=>document.getElementById(id).classList.remove('show'));
-}
-
-function hFillForm(r){
-  document.getElementById('hInpAssembly').value = r ? r.assemblyID : '';
-  document.getElementById('hInpPPCode').value   = r ? r.ppCode : '';
-  document.getElementById('hInpTeller').value   = r ? (r.teller||'') : '';
-  document.getElementById('hInpDate').value     = r ? r.txnDate : '';
-  document.getElementById('hInpTime').value     = r ? (r.txnTime||'') : '';
-  document.getElementById('hInpHType').value    = r ? r.harvestType : '';
-  document.getElementById('hInpYear').value     = r ? r.harvestYear : new Date().getFullYear();
-  document.getElementById('hInpTType').value    = r ? r.txnType : 1;
-  document.getElementById('hInpCcy').value      = r ? r.ccy : 'GHS';
-  document.getElementById('hInpPledge').value   = r ? r.pledge : '';
-  document.getElementById('hInpAmt').value      = r ? r.amtPaid : '';
-  document.getElementById('hInpRate').value     = r ? r.exchangeRate : 1;
-  document.getElementById('hInpMOP').value      = r ? r.mop : 'Cash';
-  document.getElementById('hInpPayDet').value   = r ? (r.payDet||'') : '';
-  document.getElementById('hInpComment').value  = r ? (r.comment||'') : '';
-}
-
-function hOpenAdd(){
-  document.getElementById('hOrigID').value = '';
-  hFillForm(null);
-  document.getElementById('hModalTitle').textContent = 'Add Harvest Transaction';
-  document.getElementById('hSaveTxt').textContent = 'Save transaction';
-  hClearErr();
-  document.getElementById('hFormOverlay').classList.add('show');
-  setTimeout(()=>document.getElementById('hInpAssembly').focus(),80);
-}
-
-function hOpenEdit(id){
-  const r = hRows.find(x=>x.id===id); if(!r) return;
-  document.getElementById('hOrigID').value = id;
-  hFillForm(r);
-  document.getElementById('hModalTitle').textContent = 'Edit Transaction — #'+id;
-  document.getElementById('hSaveTxt').textContent = 'Update transaction';
-  hClearErr(); hCloseView();
-  document.getElementById('hFormOverlay').classList.add('show');
-  setTimeout(()=>document.getElementById('hInpAssembly').focus(),80);
-}
-function hCloseForm(){ document.getElementById('hFormOverlay').classList.remove('show'); }
-
-function hSave(){
-  let ok = true;
-  const v = id => document.getElementById(id).value.trim();
-  const req = (fid, eid) => { if(!v(fid)){ document.getElementById(fid).classList.add('err'); document.getElementById(eid).classList.add('show'); ok=false; } };
-  req('hInpAssembly','eAssembly'); req('hInpPPCode','ePPCode'); req('hInpDate','eDate');
-  req('hInpHType','eHType'); req('hInpYear','eYear'); req('hInpPledge','ePledge'); req('hInpAmt','eAmt');
-  if(!ok) return;
-  const obj = {
-    assemblyID : v('hInpAssembly'),
-    ppCode     : v('hInpPPCode'),
-    teller     : v('hInpTeller'),
-    txnDate    : v('hInpDate'),
-    txnTime    : v('hInpTime'),
-    harvestType: v('hInpHType').toUpperCase(),
-    harvestYear: parseInt(v('hInpYear')),
-    txnType    : parseInt(document.getElementById('hInpTType').value),
-    ccy        : document.getElementById('hInpCcy').value,
-    pledge     : parseFloat(v('hInpPledge')||0),
-    amtPaid    : parseFloat(v('hInpAmt')||0),
-    exchangeRate: parseFloat(v('hInpRate')||1),
-    mop        : document.getElementById('hInpMOP').value,
-    payDet     : v('hInpPayDet'),
-    comment    : v('hInpComment'),
-    verified   : 'N'
-  };
-  const isEdit = !!document.getElementById('hOrigID').value;
-  if(!isEdit){
-    obj.id = nextID++;
-    hRows.push(obj);
-    showToast('Transaction #'+obj.id+' added successfully.');
-    hCloseForm(); hFilter(); hUpdateStats(); hlRow(obj.id);
-  } else {
-    const oid = parseInt(document.getElementById('hOrigID').value);
-    const idx = hRows.findIndex(x=>x.id===oid);
-    if(idx > -1){ obj.id=oid; obj.verified=hRows[idx].verified; hRows[idx]=obj; }
-    showToast('Transaction #'+oid+' updated.');
-    hCloseForm(); hFilter(); hUpdateStats(); hlRow(oid);
-  }
-}
-
-/* ══════════════════
-   VIEW
-══════════════════ */
-function hOpenView(id){
-  const r = hRows.find(x=>x.id===id); if(!r) return;
-  hViewID = id;
-  document.getElementById('hDetailGrid').innerHTML = `
-    <div class="detail-cell"><div class="dlbl">Transaction ID</div><div class="dval mono">${esc(r.id)}</div></div>
-    <div class="detail-cell"><div class="dlbl">Assembly ID</div><div class="dval">${esc(r.assemblyID)}</div></div>
-    <div class="detail-cell"><div class="dlbl">PP Code</div><div class="dval mono">${esc(r.ppCode)}</div></div>
-    <div class="detail-cell"><div class="dlbl">Teller</div><div class="dval">${esc(r.teller||'—')}</div></div>
-    <div class="detail-cell"><div class="dlbl">Transaction Date</div><div class="dval">${esc(r.txnDate)}</div></div>
-    <div class="detail-cell"><div class="dlbl">Transaction Time</div><div class="dval mono">${esc(r.txnTime||'—')}</div></div>
-    <div class="detail-cell"><div class="dlbl">Harvest Type</div><div class="dval">${esc(r.harvestType)}</div></div>
-    <div class="detail-cell"><div class="dlbl">Harvest Year</div><div class="dval">${esc(r.harvestYear)}</div></div>
-    <div class="detail-cell"><div class="dlbl">Transaction Type</div><div class="dval"><span class="badge ${r.txnType===1?'badge-pledge':'badge-payment'}">${r.txnType===1?'Pledge':'Payment'}</span></div></div>
-    <div class="detail-cell"><div class="dlbl">Currency</div><div class="dval">${esc(r.ccy)}</div></div>
-    <div class="detail-cell"><div class="dlbl">Pledge Amount</div><div class="dval mono">${esc(r.ccy)} ${fmt(r.pledge)}</div></div>
-    <div class="detail-cell"><div class="dlbl">Amount Paid</div><div class="dval mono" style="color:#065f46;font-weight:700">${esc(r.ccy)} ${fmt(r.amtPaid)}</div></div>
-    <div class="detail-cell"><div class="dlbl">Exchange Rate</div><div class="dval mono">${fmt(r.exchangeRate)}</div></div>
-    <div class="detail-cell"><div class="dlbl">Mode of Payment</div><div class="dval">${esc(r.mop)}</div></div>
-    <div class="detail-cell"><div class="dlbl">Payment Details</div><div class="dval">${esc(r.payDet||'—')}</div></div>
-    <div class="detail-cell"><div class="dlbl">Verification Status</div><div class="dval"><span class="badge ${r.verified==='Y'?'badge-verified':'badge-pending'}">${r.verified==='Y'?'Verified':'Pending'}</span></div></div>
-    <div class="detail-cell full"><div class="dlbl">Comment</div><div class="dval">${esc(r.comment||'—')}</div></div>
-  `;
-  document.getElementById('hViewOverlay').classList.add('show');
-}
-function hCloseView(){ document.getElementById('hViewOverlay').classList.remove('show'); }
-function hEditFromView(){ hCloseView(); if(hViewID !== null) hOpenEdit(hViewID); }
-
-/* ══════════════════
-   DELETE
-══════════════════ */
-function hOpenDel(id){
-  const r = hRows.find(x=>x.id===id); if(!r) return;
-  document.getElementById('hDelID').value = id;
-  document.getElementById('hDelName').textContent = '#'+r.id+' — '+r.assemblyID+' / '+r.ppCode;
-  document.getElementById('hDelOverlay').classList.add('show');
-}
-function hCloseDel(){ document.getElementById('hDelOverlay').classList.remove('show'); }
-function hConfirmDel(){
-  const id = parseInt(document.getElementById('hDelID').value);
-  const r = hRows.find(x=>x.id===id);
-  const label = r ? '#'+r.id : 'ID '+id;
-  hRows = hRows.filter(x=>x.id!==id);
-  hCloseDel(); hFilter(); hUpdateStats();
-  showToast('Transaction '+label+' permanently deleted.','danger');
-}
-
-/* Backdrop close */
-['hFormOverlay','hViewOverlay','hDelOverlay'].forEach(id=>{
-  const el = document.getElementById(id);
-  el.addEventListener('click', e=>{ if(e.target===el) el.classList.remove('show'); });
-});
-
-/* Init */
-hRender(hRows); hUpdateStats();
+};
+app.render();
 </script>
 </body>
 </html>
